@@ -89,6 +89,7 @@ class Recipe(models.Model):
         related_name='recipes',
         verbose_name='Тэг',
     )
+
     #image = models.ImageField(
     #    verbose_name='Изображение',
     #    upload_to='recipe_images/'
@@ -164,14 +165,14 @@ class Cart(models.Model):
 class Favorite(models.Model):
     user = models.ForeignKey(
         User,
+        related_name='favorited_recipes',
         on_delete=models.CASCADE,
-        related_name='favorites',
         verbose_name='Пользователь'
     )
-    recipes = models.ManyToManyField(
+    recipe = models.ForeignKey(
         Recipe,
-#        unique=True,
-#        on_delete=models.CASCADE,
+        related_name='favorited_users',
+        on_delete=models.CASCADE,
         verbose_name='Рецепты'
     )
 
@@ -179,9 +180,13 @@ class Favorite(models.Model):
         ordering = ['-id']
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранные'
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'recipe'],
+                                    name='favorite_user_recipe')
+        ]
 
     def __str__(self):
-        return f'{self.user}'
+        return f'f:{self.user}:{self.recipe}'
 
 
 class Follow(models.Model):

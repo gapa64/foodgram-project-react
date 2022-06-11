@@ -139,21 +139,42 @@ class RecipeReadSerializer(serializers.ModelSerializer):
 
 class FavoriteSerializer(serializers.ModelSerializer):
 
-    author = serializers.PrimaryKeyRelatedField(read_only=True)
-    recipes = serializers.PrimaryKeyRelatedField(read_only=True)
+    user = serializers.PrimaryKeyRelatedField(read_only=True,
+                                              required=False)
+    recipe = serializers.PrimaryKeyRelatedField(read_only=True,
+                                                required=False)
 
     class Meta:
-        fields = '__all__'
+        fields = ('user', 'recipe')
         model = Favorite
+
+    def create(self, validated_data):
+        recipe = validated_data['recipe']
+        user = validated_data['user']
+        if Favorite.objects.filter(recipe=recipe,
+                                   user=user).exists():
+            raise serializers.ValidationError('Нельзя добавить рецепт '
+                                              'в избранное дважды')
+        favorite = Favorite.objects.create(user=user, recipe=recipe)
+        return favorite
+
+
+
+
+    '''   
+    def validate(self, data):
+        print(data)
+        recipe = data['recipe']
+        user = data['user']
+        if Favorite.objects.filter(recipe=recipe,
+                                   user=user).exists():
+            raise serializers.ValidationError('Нельзя добавить рецепт'
+                                              'в избранное дважды')
+        return attrs
 
     def validate(self, attrs):
         recipe = attrs['recipe']
         if attrs.user.favorite.recipes.filter(recipe=recipe).exists():
             raise serializers.ValidationError('Нельзя добавить рецепт'
                                               'в избранное дважды')
-    def create(self, validated_data):
-        pass
-
-
-
-
+    '''

@@ -40,8 +40,8 @@ class IngredientRecipeAdmin(admin.ModelAdmin):
 
 class FavoriteAdmin(admin.ModelAdmin):
     list_display = ('user', )
-    search_fields = ('user', 'recipes')
-    list_filter = ('user', 'recipes')
+    search_fields = ('user', 'recipe')
+    list_filter = ('user', 'recipe')
     empty_value_display = '-пусто-'
 
 class CartAdmin(admin.ModelAdmin):
