@@ -1,8 +1,9 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
+from rest_framework.validators import UniqueTogetherValidator
 
-from recipes.models import Recipe, Ingredient, IngredientRecipe, Tag, Favorite
+from recipes.models import Recipe, Ingredient, IngredientRecipe, Tag, Favorite, Cart
 from users.serializers import CustomUserReadSerializer
 
 User = get_user_model()
@@ -39,13 +40,14 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
                 'Количество ингредиента должно быть больше 0')
         return amount
 
+
 class IngredientRecipeReadSerializer(serializers.ModelSerializer):
 
     id = serializers.PrimaryKeyRelatedField(
         source='ingredient', read_only=True
     )
-    measurement_unit = serializers.CharField\
-        (source='ingredient.measurement_unit'
+    measurement_unit = serializers.CharField(
+        source='ingredient.measurement_unit'
     )
     name = serializers.CharField(
         source='ingredient.name'
@@ -133,48 +135,44 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         default=False,
         read_only=True
     )
+
     class Meta:
         fields = '__all__'
         model = Recipe
 
-class FavoriteSerializer(serializers.ModelSerializer):
 
-    user = serializers.PrimaryKeyRelatedField(read_only=True,
-                                              required=False)
-    recipe = serializers.PrimaryKeyRelatedField(read_only=True,
-                                                required=False)
+class RecipeBriefSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = ('id', 'name', 'cooking_time')
+        model = Recipe
+
+
+class FavoriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = ('user', 'recipe')
         model = Favorite
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Favorite.objects.all(),
+                fields=('user', 'recipe'),
+                message=('Нельзя добавить один и тот же '
+                         'рецепт дважды в избранное')
+            )
+        ]
 
-    def create(self, validated_data):
-        recipe = validated_data['recipe']
-        user = validated_data['user']
-        if Favorite.objects.filter(recipe=recipe,
-                                   user=user).exists():
-            raise serializers.ValidationError('Нельзя добавить рецепт '
-                                              'в избранное дважды')
-        favorite = Favorite.objects.create(user=user, recipe=recipe)
-        return favorite
+class CartSerializer(serializers.ModelSerializer):
 
+    class Meta:
+        fields = ('user', 'recipe')
+        model = Cart
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Cart.objects.all(),
+                fields=('user', 'recipe'),
+                message=('Нельзя добавить один и тот же '
+                         'рецепт дважды в корзину')
+            )
+        ]
 
-
-
-    '''   
-    def validate(self, data):
-        print(data)
-        recipe = data['recipe']
-        user = data['user']
-        if Favorite.objects.filter(recipe=recipe,
-                                   user=user).exists():
-            raise serializers.ValidationError('Нельзя добавить рецепт'
-                                              'в избранное дважды')
-        return attrs
-
-    def validate(self, attrs):
-        recipe = attrs['recipe']
-        if attrs.user.favorite.recipes.filter(recipe=recipe).exists():
-            raise serializers.ValidationError('Нельзя добавить рецепт'
-                                              'в избранное дважды')
-    '''
