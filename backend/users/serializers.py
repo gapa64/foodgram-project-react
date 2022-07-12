@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
+
 User = get_user_model()
 
 
@@ -27,3 +28,9 @@ class CustomUserCreateSerializer(serializers.ModelSerializer):
                   'username',
                   'email',
                   'password')
+
+
+class SetPassSerializer(serializers.ModelSerializer):
+
+    current_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)

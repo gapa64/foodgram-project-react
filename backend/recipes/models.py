@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.core import validators
 from django.db import models
-#from colorfield.fields import ColorField
 
 User = get_user_model()
 
@@ -9,12 +8,11 @@ User = get_user_model()
 class Tag(models.Model):
     name = models.CharField(
         max_length=200,
-        unique=True,
         verbose_name='Название'
     )
     color = models.CharField(
         max_length=7,
-        unique=True,
+        null=True,
         verbose_name='Цвет в HEX'
     )
     slug = models.SlugField(
@@ -34,6 +32,7 @@ class Tag(models.Model):
 
 class Ingredient(models.Model):
     name = models.CharField(
+        unique=True,
         max_length=200,
         verbose_name='Название'
     )
@@ -69,7 +68,6 @@ class Recipe(models.Model):
     ingredients = models.ManyToManyField(
         Ingredient,
         through='IngredientRecipe',
-#        related_name='recipes',  #not clear if needed
         verbose_name='Ингредиенты'
     )
     cooking_time = models.PositiveSmallIntegerField(
@@ -86,14 +84,16 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(
         Tag,
         null=True,
+        blank=True,
         related_name='recipes',
         verbose_name='Тэг',
-    )
 
-    #image = models.ImageField(
-    #    verbose_name='Изображение',
-    #    upload_to='recipe_images/'
-    #)
+    )
+    image = models.ImageField(
+        blank=True,
+        verbose_name='Картинка',
+        upload_to='recipes_images'
+    )
 
     class Meta:
         verbose_name = 'Рецепт'
@@ -113,7 +113,6 @@ class IngredientRecipe(models.Model):
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
-#        related_name='recipes',
         verbose_name='Соответствующий Ингредиент'
     )
     amount = models.PositiveSmallIntegerField(
@@ -191,28 +190,3 @@ class Favorite(models.Model):
 
     def __str__(self):
         return f'{self.user}:{self.recipe}'
-
-
-class Follow(models.Model):
-    user = models.ForeignKey(
-        User,
-        related_name='follower',
-        on_delete=models.CASCADE,
-        verbose_name='Подписался кто'
-    )
-    author = models.ForeignKey(
-        User,
-        related_name='following',
-        on_delete=models.CASCADE,
-        verbose_name='Подписан на кого'
-    )
-
-    class Meta:
-        ordering = ['-id']
-        constraints = [
-            models.UniqueConstraint(fields=['user', 'author'],
-                                    name='unique_follow')
-        ]
-
-    def __str__(self):
-        return f'{self.user}_on_{self.author}'

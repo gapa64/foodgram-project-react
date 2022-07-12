@@ -38,3 +38,5 @@ urllib3==1.26.7
 zipp==3.6.0
 gunicorn==20.0.4
 psycopg2-binary==2.8.6
+reportlab==3.6.10
+drf-extra-fields==3.4.0
