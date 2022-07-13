@@ -17,8 +17,7 @@ class CustomUserAdmin(UserAdmin):
 
     followers_count.short_description = 'Число подписчиков'
     list_display = ('id', 'username', 'email', 'followers_count')
-    search_fields = ('username', 'email')
-    list_filter = ('username', 'email')
+    search_fields = ('username', 'email', 'first_name', 'last_name')
     empty_value_display = '-пусто-'
     inlines = (FollowerInLine, )
 

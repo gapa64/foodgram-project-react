@@ -2,8 +2,10 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = 'django-insecure-i(xhct-gi^v5p&ckm=y78y)3zj4@l2tm4l&pmk=fx_(=jzerwz'
-
+SECRET_KEY = os.getenv(
+    'SECRET_KEY',
+    default='django-insecure-i(xhct-gi^v5p&ckm=y78y)3zj4@l2tm4l&pmk=fx_(=jzerwz'
+)
 
 DEBUG = os.getenv('DEBUG', default=True)
 
@@ -16,7 +18,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'debug_toolbar',
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
@@ -37,7 +38,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -83,14 +83,6 @@ DATABASES = {
                           default=5432)
     }
 }
-'''
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-'''
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -145,9 +137,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'docs')]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

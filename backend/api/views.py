@@ -90,11 +90,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
             data = {'user': current_user.id,
                     'recipe': recipe.id}
             serializer = serializer_class(data=data)
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
-                serialized_response = RecipeBriefSerializer(recipe)
-                return Response(serialized_response.data,
-                                status=status.HTTP_201_CREATED)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            serialized_response = RecipeBriefSerializer(recipe)
+            return Response(serialized_response.data,
+                            status=status.HTTP_201_CREATED)
         instance = target_model.objects.filter(recipe=recipe,
                                                user=current_user).get()
         if not instance:

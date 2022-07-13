@@ -96,6 +96,9 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
                                           'быть меньше 1')
 
     def validate_ingredients(self, ingredients):
+        if len(ingredients) < 1:
+            raise serializers.ValidationError('Должен быть хотя бы '
+                                              'один ингредиент')
         unique_ingredients = set()
         for ingredient_object in ingredients:
             ingredient_instance = ingredient_object['id']
@@ -104,6 +107,18 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
                                                   'быть уникальным')
             unique_ingredients.add(ingredient_instance.id)
         return ingredients
+
+    def validate_tags(self, tags):
+        if len(tags) < 1:
+            raise serializers.ValidationError('Должен быть хотя бы '
+                                              'один тэг')
+        unique_tags = set()
+        for tag in tags:
+            if tag in unique_tags:
+                raise serializers.ValidationError('Тэг должен '
+                                                  'быть уникальным')
+            unique_tags.add(tag)
+        return tags
 
     def create(self, validated_data):
         ingredients = validated_data.pop('ingredients')
@@ -114,12 +129,15 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         return recipe
 
     def create_ingredients(self, ingredients, recipe):
+        amounts_list = []
         for ingredient in ingredients:
-            IngredientRecipe.objects.create(
+            entry = IngredientRecipe(
                 recipe=recipe,
                 ingredient=ingredient['id'],
                 amount=ingredient['amount']
             )
+            amounts_list.append(entry)
+        IngredientRecipe.objects.bulk_create(amounts_list)
 
     def update(self, instance, validated_data):
         ingredients = validated_data.pop('ingredients')

@@ -43,11 +43,11 @@ class CustomUserViewSet(UserViewSet):
             data = {'user': current_user.id,
                     'author': author.id}
             serializer = FollowWriteSerializer(data=data)
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
-                serialized_response = FollowCreatedSerializer(current_user)
-                return Response(serialized_response.data,
-                                status=status.HTTP_201_CREATED)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            serialized_response = FollowCreatedSerializer(current_user)
+            return Response(serialized_response.data,
+                            status=status.HTTP_201_CREATED)
         instance = Follow.objects.filter(author=author,
                                          user=current_user).get()
         if not instance:

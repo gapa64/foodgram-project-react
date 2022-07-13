@@ -6,6 +6,7 @@ from .models import Follow
 class FollowAdmin(admin.ModelAdmin):
     list_display = ('id', 'author', 'user')
     search_fields = ('author', 'user')
+    list_filter = ('author', 'user')
     empty_value_display = '-пусто-'
 
 
