@@ -23,21 +23,23 @@ POSTGRES_PASSWORD=postgres
 DB_HOST=127.0.0.1
 DB_PORT=5432
 ```
-Склонируйте себе репозиторий из github
+Склонируйте себе репозиторий папку infra содержащую всего 2 файла
 ```bash
-https://github.com/gapa64/foodgram-project-react
+docker-compose.yml  
+nginx.conf
 ```
 Перейдите в папку с инфраструктурными скриптами и запустите Docker Compose.
 
 ```bash
-cd foodgram-project-react/infra
+cd infra
 docker-compose up -d
 ```
 
 Compose развернет 3 контейера
 - backend собственно код foodgram
-- postgres база данных постгрес
+- db база данных постгрес
 - nginx вэб сервер nginx отвественный за раздачу статики  
+- 4ый контейней frontend будет использоваться только на время деплоя проекта.
 
 После запуска недобхоми провести миграции и собрать статику
 ```bash

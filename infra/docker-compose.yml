@@ -2,7 +2,6 @@ version: '3.3'
 volumes:
   static_value:
   media_value:
-
 services:
   db:
     container_name: db
@@ -23,10 +22,8 @@ services:
     env_file:
       - ../.env
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
-    container_name: foodgram_frontend
+    container_name: frontend
+    image: gaps64/foodgram_frontend:latest
     volumes:
       - ../frontend/:/app/result_build/
   nginx:
