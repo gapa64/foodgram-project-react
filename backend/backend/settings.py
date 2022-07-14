@@ -59,7 +59,7 @@ TEMPLATES = [
 ]
 
 INTERNAL_IPS = [
-    "127.0.0.1",
+    '127.0.0.1',
 ]
 
 WSGI_APPLICATION = 'backend.wsgi.application'
@@ -141,3 +141,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'docs')]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+print(DATABASES['default']['HOST'], DATABASES['default']['PORT'])
