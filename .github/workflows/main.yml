@@ -17,38 +17,16 @@ jobs:
     - name: Test with flake8 and django tests
       run: |
         python -m flake8 backend
-  build_and_push_to_docker_hub:
-    name: Push Docker image to Docker Hub
-    runs-on: ubuntu-latest
-    needs: tests
-    if: github.ref == 'refs/heads/master'
-    steps:
-      - name: Check out the repo
-        uses: actions/checkout@v2
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      - name: Login to Docker
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      - name: Push to Docker Hub
-        uses: docker/build-push-action@v2
-        with:
-          no-cache: true
-          context: ./backend/
-          push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_backend:latest
+
 
   deploy:
     name: Deploy to a server via SSH
     runs-on: ubuntu-latest
-    needs: build_and_push_to_docker_hub
+    needs: tests
 
     steps:
       - name: Check out
         uses: actions/checkout@v2
-
       - name: Copy files via SSH
         uses: appleboy/scp-action@master
         with:
@@ -56,7 +34,7 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
-          source: 'infra/docker-compose.yml, infra/nginx.conf, frontend/'
+          source: 'infra/, frontend/'
           overwrite: true
           target: 'foodgram-project-react'
       - name: Set up initial files
