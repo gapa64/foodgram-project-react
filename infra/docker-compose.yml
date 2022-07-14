@@ -13,7 +13,7 @@ services:
       - ./.env
   backend:
     container_name: backend
-    build: ../backend/
+    image: gaps64/foodgram_backend:latest
     restart: always
     volumes:
       - static_value:/app/backend_static/
@@ -22,7 +22,6 @@ services:
       - db
     env_file:
       - ./.env
-
   frontend:
     build:
       context: ../frontend
@@ -30,7 +29,6 @@ services:
     container_name: foodgram_frontend
     volumes:
       - ../frontend/:/app/result_build/
-
   nginx:
     image: nginx:1.21.3-alpine
     container_name: nginx
