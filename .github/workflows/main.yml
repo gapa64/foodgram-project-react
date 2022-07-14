@@ -22,11 +22,8 @@ jobs:
   deploy:
     name: Deploy to a server via SSH
     runs-on: ubuntu-latest
-    
     needs: tests
     steps:
-      - name: Check out
-        uses: actions/checkout@v2
       - name: Copy files via SSH
         uses: appleboy/scp-action@master
         with:
