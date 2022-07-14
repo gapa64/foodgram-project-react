@@ -27,7 +27,7 @@ DB_PORT=5432
 ```bash
 https://github.com/gapa64/foodgram-project-react
 ```
-Перейдите в папку с инфраструктурными скриптами и запустите Docker Compose
+Перейдите в папку с инфраструктурными скриптами и запустите Docker Compose.
 
 ```bash
 cd foodgram-project-react/infra
