@@ -2,36 +2,47 @@ name: foodgram workflow
 on: [push]
 jobs:
   deploy:
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    name: Deploy to a server via SSH
     runs-on: ubuntu-latest
     steps:
-      - name: executing remote ssh commands to deploy
+      - name: Check out
+        uses: actions/checkout@v2
+      - name: Copy files via SSH
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_KEY }}
+          source: 'infra, frontend'
+          overwrite: true
+          target: 'foodgram-project-react'
+
+      - name: Set up initial files
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            sudo ls -ll
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_backend
             sudo docker-compose stop
             sudo docker-compose rm backend
-            rm .env
-            touch .env
-            echo SECRET_KEY='${{ secrets.SECRET_KEY }}' >> .env
+            sudo docker-compose rm frontend
+            echo DEBUG=${{ secrets.DEBUG }} > .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
             echo DB_NAME=${{ secrets.DB_NAME }} >> .env
             echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
             echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
             echo DB_HOST=${{ secrets.DB_HOST }} >> .env
             echo DB_PORT=${{ secrets.DB_PORT }} >> .env
-            sudo docker-compose up -d --build
-            sudo docker-compose exec -T backend python manage.py makemigrations
-            sudo docker-compose exec -T backend python manage.py migrate
-            sudo docker-compose exec -T backend python manage.py load_ingrs
-            sudo docker-compose exec -T backend python manage.py load_tags
+            echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> .env
+            sudo cd infra
+            sudo infra/docker-compose up -d
+            sudo docker-compose exec -T backend python manage.py makemigrations --noinput
+            sudo docker-compose exec -T backend python manage.py migrate --noinput
             sudo docker-compose exec -T backend python manage.py collectstatic --no-input
-            
+            sudo docker-compose exec -T backend python manage.py loaddata recipes.json --no-input
+
   send_message:
     runs-on: ubuntu-latest
     needs: deploy
