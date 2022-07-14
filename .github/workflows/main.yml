@@ -1,3 +1,5 @@
+name: foodgram workflow
+on: [push]
 jobs:
   deploy:
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
