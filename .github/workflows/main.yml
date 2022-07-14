@@ -15,7 +15,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           source: 'infra, frontend'
           overwrite: true
-          target: 'foodgram-project-react'
+          target: '.'
 
       - name: Set up initial files
         uses: appleboy/ssh-action@master
