@@ -39,38 +39,52 @@ jobs:
           context: ./backend/
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_backend:latest
+
   deploy:
+    name: Deploy to a server via SSH
     runs-on: ubuntu-latest
     needs: build_and_push_to_docker_hub
+
     steps:
-    - name: executing remote ssh commands to deploy
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USER }}
-        passphrase: ${{ secrets.PASSPHRASE }}
-        key: ${{ secrets.SSH_KEY }}
-        stack_file_name: docker-compose.yaml
-        script: |
-          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_backend
-          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend
-          sudo docker-compose stop
-          sudo docker-compose rm backend
-          sudo docker-compose rm frontend
-          rm .env
-          touch .env
-          echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
-          echo DB_NAME=${{ secrets.DB_NAME }} >> .env
-          echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
-          echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
-          echo DB_HOST=${{ secrets.DB_HOST }} >> .env
-          echo DB_PORT=${{ secrets.DB_PORT }} >> .env
-          echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> .env
-          sudo docker-compose up -d
-          sudo docker-compose exec -T backend python manage.py makemigrations --noinput
-          sudo docker-compose exec -T backend python manage.py migrate --noinput
-          sudo docker-compose exec -T backend python manage.py collectstatic --no-input
-          sudo docker-compose exec -T backend python manage.py loaddata recipes.json --no-input
+      - name: Check out
+        uses: actions/checkout@v2
+
+      - name: Copy files via SSH
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
+          source: 'infra/docker-compose.yml, infra/nginx.conf, frontend/'
+          overwrite: true
+          target: 'foodgram-project-react'
+      - name: Set up initial files
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
+          stack_file_name: docker-compose.yaml
+          script: |
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_backend
+            sudo docker-compose stop
+            sudo docker-compose rm backend
+            sudo docker-compose rm frontend
+            echo DEBUG=${{ secrets.DEBUG }} > .env
+            echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
+            echo DB_NAME=${{ secrets.DB_NAME }} >> .env
+            echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
+            echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
+            echo DB_HOST=${{ secrets.DB_HOST }} >> .env
+            echo DB_PORT=${{ secrets.DB_PORT }} >> .env
+            echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> .env
+            sudo docker-compose up -d
+            sudo docker-compose exec -T backend python manage.py makemigrations --noinput
+            sudo docker-compose exec -T backend python manage.py migrate --noinput
+            sudo docker-compose exec -T backend python manage.py collectstatic --no-input
+            sudo docker-compose exec -T backend python manage.py loaddata recipes.json --no-input
   send_message:
     runs-on: ubuntu-latest
     needs: deploy

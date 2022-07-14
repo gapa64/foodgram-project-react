@@ -23,10 +23,17 @@ POSTGRES_PASSWORD=postgres
 DB_HOST=127.0.0.1
 DB_PORT=5432
 ```
-Когда докер установлен скачайте файл docker-compose.yaml и выполните следую команду из директории с файлом
+Склонируйте себе репозиторий из github
 ```bash
+https://github.com/gapa64/foodgram-project-react
+```
+Перейдите в папку с инфраструктурными скриптами и запустите Docker Compose
+
+```bash
+cd foodgram-project-react/infra
 docker-compose up -d
 ```
+
 Compose развернет 3 контейера
 - backend собственно код foodgram
 - postgres база данных постгрес
