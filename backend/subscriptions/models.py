@@ -3,6 +3,7 @@ from django.db import models
 
 User = get_user_model()
 
+
 class Follow(models.Model):
     user = models.ForeignKey(
         User,

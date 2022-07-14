@@ -39,7 +39,6 @@ class IngredientsViewSet(viewsets.ModelViewSet):
     pagination_class = None
 
 
-
 class RecipeViewSet(viewsets.ModelViewSet):
     FAVORITE_ERROR_MESSAGE = ('Рецепт {recipe} не добавлен в '
                               'избранное пользователя {user}')
@@ -69,7 +68,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         current_user = self.request.user
         if not current_user.is_authenticated:
             return Recipe.objects.all()
-        recipe_queryset = Recipe.objects.annotate(
+        return Recipe.objects.annotate(
             is_favorited=(Case(
                 When(favorited_users__user=current_user, then=True),
                 default=False,
@@ -80,7 +79,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 default=False,
                 output_field=BooleanField()))
         ).all()
-        return recipe_queryset
 
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:

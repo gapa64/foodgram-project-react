@@ -33,6 +33,7 @@ class FollowingSerializer(serializers.ModelSerializer):
             return RecipeBriefSerializer(recipes[:limit], many=True).data
         return RecipeBriefSerializer(recipes, many=True).data
 
+
 class FollowCreatedSerializer(FollowingSerializer):
 
     recipes_count = serializers.SerializerMethodField()

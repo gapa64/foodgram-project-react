@@ -1,4 +1,5 @@
 from rest_framework import routers
+
 from .views import CustomUserViewSet
 from subscriptions.views import FollowViewSet
 

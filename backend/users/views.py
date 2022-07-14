@@ -9,7 +9,8 @@ from rest_framework.response import Response
 
 from api.pagination import LimitPagination
 from subscriptions.models import Follow
-from subscriptions.serializers import FollowWriteSerializer, FollowCreatedSerializer
+from subscriptions.serializers import (FollowWriteSerializer,
+                                       FollowCreatedSerializer)
 
 
 User = get_user_model()
