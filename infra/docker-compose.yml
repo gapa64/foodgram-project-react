@@ -10,6 +10,9 @@ services:
       - /var/lib/postgresql/data/
     env_file:
       - ../.env
+    networks:
+      vpcbr:
+        ipv4_address: ${DB_HOST}
   backend:
     container_name: backend
     image: gaps64/foodgram_backend:latest
@@ -21,6 +24,9 @@ services:
       - db
     env_file:
       - ../.env
+    networks:
+      vpcbr:
+        ipv4_address: ${BACKEND_IP}
   frontend:
     container_name: frontend
     image: gaps64/foodgram_frontend:latest
@@ -44,3 +50,14 @@ services:
     restart: always
     depends_on:
       - frontend
+    networks:
+      vpcbr:
+        ipv4_address: ${NGINX_IP}
+    env_file:
+      - ../.env
+networks:
+  vpcbr:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: ${INTERNAL_SUBNET}
