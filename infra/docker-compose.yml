@@ -10,7 +10,7 @@ services:
     volumes:
       - /var/lib/postgresql/data/
     env_file:
-      - ./.env
+      - ../.env
   backend:
     container_name: backend
     image: gaps64/foodgram_backend:latest
@@ -21,7 +21,7 @@ services:
     depends_on:
       - db
     env_file:
-      - ./.env
+      - ../.env
   frontend:
     build:
       context: ../frontend
