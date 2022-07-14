@@ -18,46 +18,38 @@ jobs:
       run: |
         python -m flake8 backend
 
-
   deploy:
-    name: Deploy to a server via SSH
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: tests
     steps:
-      - name: Copy files via SSH
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USER }}
-          key: ${{ secrets.SSH_KEY }}
-          source: 'infra/docker-compose.yml'
-          overwrite: true
-          target: 'foodgram-project-react'
-      - name: Set up initial files
+      - name: executing remote ssh commands to deploy
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
+            sudo ls -ll
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_backend
             sudo docker-compose stop
             sudo docker-compose rm backend
-            sudo docker-compose rm frontend
-            echo DEBUG=${{ secrets.DEBUG }} > .env
+            rm .env
+            touch .env
+            echo SECRET_KEY='${{ secrets.SECRET_KEY }}' >> .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
             echo DB_NAME=${{ secrets.DB_NAME }} >> .env
             echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
             echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
             echo DB_HOST=${{ secrets.DB_HOST }} >> .env
             echo DB_PORT=${{ secrets.DB_PORT }} >> .env
-            echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> .env
-            sudo cd infra
-            sudo docker-compose up -d
-            sudo docker-compose exec -T backend python manage.py makemigrations --noinput
-            sudo docker-compose exec -T backend python manage.py migrate --noinput
+            sudo docker-compose up -d --build
+            sudo docker-compose exec -T backend python manage.py makemigrations
+            sudo docker-compose exec -T backend python manage.py migrate
+            sudo docker-compose exec -T backend python manage.py load_ingrs
+            sudo docker-compose exec -T backend python manage.py load_tags
             sudo docker-compose exec -T backend python manage.py collectstatic --no-input
-            sudo docker-compose exec -T backend python manage.py loaddata recipes.json --no-input
+
   send_message:
     runs-on: ubuntu-latest
     needs: deploy
