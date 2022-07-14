@@ -1,4 +1,4 @@
-![CI workflow](https://github.com/gaps64/foodgram-project-react/actions/workflows/main.yml/badge.svg)
+![CI workflow](https://github.com/gapa64/foodgram-project-react/actions/workflows/main.yml/badge.svg)
 # Foodgram - Социальная сеть для обмена рецептами и поиска вкусняшек
 ## Доступен по адресу: http://gaps64.hopto.org/
 
@@ -43,14 +43,14 @@ Compose развернет 3 контейера
 
 После запуска недобхоми провести миграции и собрать статику
 ```bash
-sudo docker-compose exec -T backend python manage.py collectstatic --noinput
-sudo docker-compose exec -T backend python manage.py makemigrations --noinput
-sudo docker-compose exec -T backend python manage.py migrate --noinput
+sudo docker-compose exec -T backend python manage.py collectstatic
+sudo docker-compose exec -T backend python manage.py makemigrations
+sudo docker-compose exec -T backend python manage.py migrate
 ```
 Закинуть тестовых данных 
 ```bash
 
-docker-compose exec backend python manage.py collectstatic --noinput
+docker-compose exec backend python manage.py collectstatic
 ```
 Проект развернулся, наслаждайтесь и приятного апетита!
 ## Автор
