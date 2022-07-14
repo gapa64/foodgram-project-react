@@ -6,7 +6,7 @@ app_name = 'users'
 
 router = routers.DefaultRouter()
 router.register('subscriptions', FollowViewSet, basename='subscriptions')
-router.register('', CustomUserViewSet, basename='users')
+router.register('', CustomUserViewSet, basename='users_dj')
 
 urlpatterns = []
 urlpatterns.extend(router.urls)

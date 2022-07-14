@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.db.models import Case, When, BooleanField, Value
+from django.db.models import BooleanField, Case, Value, When
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from rest_framework import filters, status

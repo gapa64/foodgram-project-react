@@ -1,4 +1,4 @@
-from django.db.models import Case, Sum, When
+from django.db.models import BooleanField, Case, Sum, When
 from django_filters.rest_framework import DjangoFilterBackend
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -25,16 +25,19 @@ from .serializers import (RecipeReadSerializer, RecipeWriteSerializer,
 class TagViewset(viewsets.ModelViewSet):
 
     queryset = Tag.objects.all()
-    permission_classes = (StafforReadOnly,)
+    permission_classes = (StafforReadOnly, )
     serializer_class = TagSerializer
+    pagination_class = None
 
 
 class IngredientsViewSet(viewsets.ModelViewSet):
 
     queryset = Ingredient.objects.all()
-    permission_classes = (StafforReadOnly,)
+    permission_classes = (StafforReadOnly, )
     serializer_class = IngredientSerializer
-    filter_backends = (NameFilter,)
+    filter_backends = (NameFilter, )
+    pagination_class = None
+
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -67,11 +70,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if not current_user.is_authenticated:
             return Recipe.objects.all()
         recipe_queryset = Recipe.objects.annotate(
-            is_favorited=(Case(When(favorited_users__user=current_user,
-                                    then=True), default=False))
+            is_favorited=(Case(
+                When(favorited_users__user=current_user, then=True),
+                default=False,
+                output_field=BooleanField()))
         ).annotate(
-            is_in_shopping_cart=(Case(When(buyers__user=current_user,
-                                           then=True), default=False))
+            is_in_shopping_cart=(Case(
+                When(buyers__user=current_user, then=True),
+                default=False,
+                output_field=BooleanField()))
         ).all()
         return recipe_queryset
 

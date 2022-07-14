@@ -32,10 +32,10 @@ class IngredientRecipeAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
-class IngredientDropAdmin(admin.StackedInline):
+class IngredientDropAdmin(admin.TabularInline):
     model = Recipe.ingredients.through
     min_num = 1
-    extra = 0
+    max_num = 20
 
 
 class RecipeAdmin(admin.ModelAdmin):
