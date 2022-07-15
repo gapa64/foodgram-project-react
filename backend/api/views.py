@@ -83,13 +83,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 is_subscribed=(Case(When(following__user=current_user,
                                          then=True),
                                     default=False,
-                                    output_field=BooleanField()))
-                )
-            )
+                                    output_field=BooleanField()))))
         ).all()
 
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:
+            return RecipeReadSerializer
             return RecipeReadSerializer
         return RecipeWriteSerializer
 

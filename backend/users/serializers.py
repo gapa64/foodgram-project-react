@@ -43,6 +43,7 @@ class CustomUserCreateSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
+
 class SetPassSerializer(serializers.ModelSerializer):
 
     current_password = serializers.CharField(required=True)
