@@ -36,6 +36,12 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
         model = IngredientRecipe
         fields = ('id', 'amount')
 
+    def validate_amount(self, amount):
+        if amount > 0:
+            return amount
+        raise serializers.ValidationError('Количество ингредиента должно б '
+                                          'строго больше нуля!')
+
 
 class IngredientRecipeReadSerializer(serializers.ModelSerializer):
 

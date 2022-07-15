@@ -36,7 +36,7 @@ class IngredientRecipeAdmin(admin.ModelAdmin):
 class IngredientDropAdmin(admin.TabularInline):
     model = Recipe.ingredients.through
     min_num = 1
-    max_num = 20
+    extra = 0
 
 
 class RecipeAdmin(admin.ModelAdmin):

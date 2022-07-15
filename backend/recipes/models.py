@@ -42,8 +42,8 @@ class Ingredient(models.Model):
     )
 
     class Meta:
-        verbose_name = 'Ингридиент'
-        verbose_name_plural = 'Ингридиенты'
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
         ordering = ['name']
 
     def __str__(self):
@@ -84,7 +84,6 @@ class Recipe(models.Model):
     )
     tags = models.ManyToManyField(
         Tag,
-        blank=True,
         related_name='recipes',
         verbose_name='Тэг',
 
@@ -119,15 +118,15 @@ class IngredientRecipe(models.Model):
         default=1,
         validators=[
             validators.MinValueValidator(
-                1, message='Минимальное количество ингридиента 1')
+                1, message='Минимальное количество ингредиента 1')
         ],
         verbose_name='Количество'
     )
 
     class Meta:
         ordering = ['-id']
-        verbose_name = 'Количество ингридиента'
-        verbose_name_plural = 'Количество ингридиентов'
+        verbose_name = 'Количество ингредиента'
+        verbose_name_plural = 'Количество ингредиентов'
         constraints = [
             models.UniqueConstraint(fields=['recipe', 'ingredient'],
                                     name='unique_ingredient_recipe')

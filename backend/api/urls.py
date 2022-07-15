@@ -1,6 +1,6 @@
 from rest_framework import routers
 
-from .views import RecipeViewSet, IngredientsViewSet, TagViewset
+from .views import RecipeViewSet, IngredientsViewSet, TagViewSet
 
 app_name = 'users'
 
@@ -12,7 +12,7 @@ router.register('ingredients',
                 IngredientsViewSet,
                 basename='ingredients')
 router.register('tags',
-                TagViewset,
+                TagViewSet,
                 basename='tags')
 
 urlpatterns = []

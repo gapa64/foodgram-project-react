@@ -21,6 +21,7 @@ class CustomUserViewSet(UserViewSet):
     FOLLOW_ERROR_MESSAGE = ('Подписки пользователя {user} '
                             'на авторая {author} не существует!')
     pagination_class = LimitPagination
+    queryset = User.objects.all()
     filter_backends = (filters.SearchFilter,)
     search_fields = ('username',)
 
@@ -36,7 +37,7 @@ class CustomUserViewSet(UserViewSet):
     @action(detail=True,
             url_path='subscribe',
             methods=['POST', 'DELETE'],
-            permission_classes=(IsAuthenticated, ))
+            permission_classes=(IsAuthenticated,))
     def subscribe(self, request, id):
         current_user = self.request.user
         author = get_object_or_404(User, pk=self.kwargs['id'])

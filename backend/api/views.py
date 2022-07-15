@@ -1,4 +1,4 @@
-from django.db.models import BooleanField, Case, Sum, When
+from django.db.models import BooleanField, Case, Sum, When, Prefetch
 from django_filters.rest_framework import DjangoFilterBackend
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -13,7 +13,7 @@ from rest_framework.response import Response
 
 from .filters import RecipeFilterSet, NameFilter
 from recipes.models import (Recipe, Ingredient, IngredientRecipe,
-                            Favorite, Cart, Tag)
+                            Favorite, Cart, Tag, User)
 from .permissions import AuthorOrReadOnly, StafforReadOnly
 from .pagination import LimitPagination
 from .serializers import (RecipeReadSerializer, RecipeWriteSerializer,
@@ -22,7 +22,7 @@ from .serializers import (RecipeReadSerializer, RecipeWriteSerializer,
                           TagSerializer)
 
 
-class TagViewset(viewsets.ModelViewSet):
+class TagViewSet(viewsets.ModelViewSet):
 
     queryset = Tag.objects.all()
     permission_classes = (StafforReadOnly, )
@@ -78,6 +78,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 When(buyers__user=current_user, then=True),
                 default=False,
                 output_field=BooleanField()))
+        ).prefetch_related(
+            Prefetch('author', queryset=User.objects.annotate(
+                is_subscribed=(Case(When(following__user=current_user,
+                                         then=True),
+                                    default=False,
+                                    output_field=BooleanField()))
+                )
+            )
         ).all()
 
     def get_serializer_class(self):
@@ -125,7 +133,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             url_path='shopping_cart',
             methods=['POST', 'DELETE'],
             permission_classes=(IsAuthenticated, ))
-    def shooping_cart(self, request, pk):
+    def shopping_cart(self, request, pk):
         return self.add_remove_action(
             target_model=Cart,
             serializer_class=CartSerializer,
