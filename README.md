@@ -47,10 +47,14 @@ sudo docker-compose exec -T backend python manage.py collectstatic
 sudo docker-compose exec -T backend python manage.py makemigrations
 sudo docker-compose exec -T backend python manage.py migrate
 ```
-Закинуть тестовых данных 
+Собрать статику
 ```bash
-
 docker-compose exec backend python manage.py collectstatic
+```
+Закинуть тестовых данных
+```bash
+sudo docker compose exec -T backend python manage.py loaddata fixtures/recipes.json
+sudo docker compose exec -T backend python manage.py load_ingredients fixtures/ingredients.json
 ```
 Проект развернулся, наслаждайтесь и приятного апетита!
 ## Автор
