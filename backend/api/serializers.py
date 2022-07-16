@@ -101,10 +101,8 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         raise serializers.ValidationError('Время приготовления не может '
                                           'быть меньше 1')
 
-    def validate_ingredients(self, ingredients):
-        if len(ingredients) < 1:
-            raise serializers.ValidationError('Должен быть хотя бы '
-                                              'один ингредиент')
+    def validate(self, attrs):
+        ingredients = attrs['ingredients']
         unique_ingredients = set()
         for ingredient_object in ingredients:
             ingredient_instance = ingredient_object['id']
@@ -112,7 +110,10 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError('Ингредиент должен '
                                                   'быть уникальным')
             unique_ingredients.add(ingredient_instance.id)
-        return ingredients
+        if len(unique_ingredients) < 1:
+            raise serializers.ValidationError('Должен быть хотя бы '
+                                              'один ингредиент')
+        return attrs
 
     def validate_tags(self, tags):
         if len(tags) < 1:
