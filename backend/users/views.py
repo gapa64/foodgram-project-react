@@ -24,6 +24,7 @@ class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all()
     filter_backends = (filters.SearchFilter,)
     search_fields = ('username',)
+    ordering = ('username',)
 
     def get_queryset(self):
         current_user = self.request.user
