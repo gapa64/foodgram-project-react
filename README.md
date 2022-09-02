@@ -21,7 +21,7 @@ Table of contents
 The project includes React JS frontend delivered by Yandex Practicum team and backend implemented by student.
 Backend is developed with Django Rest Framework, so it also provides API interface for any third-party service integration.
 
-##Project Description
+## Project Description
 Users may perform the following actions:
 - Browse published recipes, filter by tag
 - Create their own recipes
